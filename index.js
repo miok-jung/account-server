@@ -1,21 +1,14 @@
 const express = require("express");
 const app = express();
-const port = 5000; // 벡서버
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+const port = 5000;
 const config = require("./config/key");
-
-// middleware에서 auth가져오기
 const { auth } = require("./middleware/auth");
 // app. post값을 하기 위해 user모델을 가져오는 것
 const { User } = require("./models/User");
 
 //application/x-www-form-urlencode의 데이터를 분석하여 가져오는 것
-app.use(bodyParser.urlencoded({ extended: true }));
-
-//application/json타입으로 된 것을 분석하여 가져오는 것을 해주기 위해 입력
-app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 const mongoose = require("mongoose");
 
