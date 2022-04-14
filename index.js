@@ -6,9 +6,16 @@ const app = express(); // NOTE app이라는 변수에 express 객체를 할당
 const port = 5000;
 const config = require("./config/key");
 
+// ANCHOR Middleware
 // NOTE express.static(root, [options]);
-// NOTE
 app.use(express.static(path.join(__dirname, "../client/build/index.html")));
+// NOTE client에서 body로 오는 object를 읽을 수 있도록 하기 위해 body-parser를 사용한다.
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ANCHOR Models를 불러오기
+const { Expense } = require("./Models/Expense");
+const { Income } = require("./Models/Income");
 
 app.listen(port, () => {
   mongoose
@@ -36,5 +43,58 @@ app.get("/", (req, res) => {
 });
 
 app.get("*", (req, res) => {
+  // * : 어느 IP로 들어오든 build/index.html을 실행시켜주겠다라는 스크립트적 의미를 가진다.
   res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
+
+// ANCHOR income
+app.post("/api/income/submit", (req, res) => {
+  let temp = req.body;
+  const accountPost = new Income(temp);
+  accountPost
+    .save()
+    .then(() => {
+      res.status(200).json({ success: true });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+
+app.post("/api/income/list", (req, res) => {
+  // NOTE find() : MongoDB에서 Document를 찾는 명령어
+  Income.find()
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true, postList: doc });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+
+// ANCHOR expense
+app.post("/api/expense/submit", (req, res) => {
+  let temp = req.body;
+  const accountPost = new Expense(temp);
+  accountPost
+    .save()
+    .then(() => {
+      res.status(200).json({ success: true });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+
+app.post("/api/expense/list", (req, res) => {
+  // NOTE find() : MongoDB에서 Document를 찾는 명령어
+  Expense.find()
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true, postList: doc });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
 });
