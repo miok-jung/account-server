@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // ANCHOR Models를 불러오기
 const { Expense } = require("./Models/Expense");
 const { Income } = require("./Models/Income");
+const { Counter } = require("./Models/Counter");
 
 app.listen(port, () => {
   mongoose
@@ -50,14 +51,29 @@ app.get("*", (req, res) => {
 // ANCHOR income
 app.post("/api/income/submit", (req, res) => {
   let temp = req.body;
-  const accountPost = new Income(temp);
-  accountPost
-    .save()
-    .then(() => {
-      res.status(200).json({ success: true });
-    })
-    .catch((err) => {
-      res.status(400).json({ success: false, err });
+  // find함수 중괄호 안에는 조건을 넣을 수 있다.
+  // 즉, name이 incomeCounter이라는 것을 Counter collection에서 찾아서 실행을 한다는 의미이다.
+  Counter.findOne({ name: "incomeCounter" })
+    .exec()
+    .then((counter) => {
+      temp.postNum = counter.postNum;
+      const accountPost = new Income(temp);
+      accountPost
+        .save()
+        .then(() => {
+          // 고유한 함수를 사용하기 위해서는 Counter의 숫자는 1씩 증가해야 한다.
+          // updateOne에는 두개의 인자를 받는다.
+          // 첫번째 인자는 조건, 두번째 인자는 어떻게 업데이트를 할지 작성한다.
+          Counter.updateOne(
+            { name: "incomeCounter" },
+            { $inc: { postNum: 1 } }
+          ).then(() => {
+            res.status(200).json({ success: true });
+          });
+        })
+        .catch((err) => {
+          res.status(400).json({ success: false, err });
+        });
     });
 });
 
@@ -76,14 +92,24 @@ app.post("/api/income/list", (req, res) => {
 // ANCHOR expense
 app.post("/api/expense/submit", (req, res) => {
   let temp = req.body;
-  const accountPost = new Expense(temp);
-  accountPost
-    .save()
-    .then(() => {
-      res.status(200).json({ success: true });
-    })
-    .catch((err) => {
-      res.status(400).json({ success: false, err });
+  Counter.findOne({ name: "expenseCounter" })
+    .exec()
+    .then((counter) => {
+      temp.postNum = counter.postNum;
+      const accountPost = new Expense(temp);
+      accountPost
+        .save()
+        .then(() => {
+          Counter.updateOne(
+            { name: "expenseCounter" },
+            { $inc: { postNum: 1 } }
+          ).then(() => {
+            res.status(200).json({ success: true });
+          });
+        })
+        .catch((err) => {
+          res.status(400).json({ success: false, err });
+        });
     });
 });
 

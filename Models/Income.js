@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 // postSchema를 mongoose를 이용하여 만든다.
 const incomeSchema = new mongoose.Schema(
   {
+    postNum: Number,
     date: String,
     largeCategory: Number,
     smallCategory: Number,
