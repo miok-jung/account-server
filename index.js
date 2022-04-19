@@ -88,6 +88,16 @@ app.post("/api/income/list", (req, res) => {
       res.status(400).json({ success: false, err });
     });
 });
+app.post("/api/income/detail", (req, res) => {
+  Income.findOne({ postNum: Number(req.body.postNum) })
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true, income: doc });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
 
 // ANCHOR expense
 app.post("/api/expense/submit", (req, res) => {
@@ -119,6 +129,16 @@ app.post("/api/expense/list", (req, res) => {
     .exec()
     .then((doc) => {
       res.status(200).json({ success: true, postList: doc });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+app.post("/api/expense/detail", (req, res) => {
+  Expense.findOne({ postNum: Number(req.body.postNum) })
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true, expense: doc });
     })
     .catch((err) => {
       res.status(400).json({ success: false, err });
