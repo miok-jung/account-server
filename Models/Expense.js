@@ -5,8 +5,6 @@ const expenseSchema = new mongoose.Schema(
   {
     postNum: Number,
     date: String,
-    largeCategory: Number,
-    smallCategory: Number,
     content: String,
     price: Number,
   },

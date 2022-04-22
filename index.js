@@ -92,7 +92,22 @@ app.post("/api/income/detail", (req, res) => {
   Income.findOne({ postNum: Number(req.body.postNum) })
     .exec()
     .then((doc) => {
-      res.status(200).json({ success: true, income: doc });
+      res.status(200).json({ success: true, post: doc });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+app.post("/api/income/edit", (req, res) => {
+  let temp = {
+    date: req.body.date,
+    content: req.body.content,
+    price: req.body.price,
+  };
+  Income.updateOne({ postNum: Number(req.body.postNum) }, { $set: temp })
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true });
     })
     .catch((err) => {
       res.status(400).json({ success: false, err });
@@ -138,7 +153,22 @@ app.post("/api/expense/detail", (req, res) => {
   Expense.findOne({ postNum: Number(req.body.postNum) })
     .exec()
     .then((doc) => {
-      res.status(200).json({ success: true, expense: doc });
+      res.status(200).json({ success: true, post: doc });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+app.post("/api/expense/edit", (req, res) => {
+  let temp = {
+    date: req.body.date,
+    content: req.body.content,
+    price: req.body.price,
+  };
+  Expense.updateOne({ postNum: Number(req.body.postNum) }, { $set: temp })
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true });
     })
     .catch((err) => {
       res.status(400).json({ success: false, err });
