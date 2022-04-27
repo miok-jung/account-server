@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // ANCHOR Models를 불러오기
 const { Expense } = require("./Models/Expense");
 const { Income } = require("./Models/Income");
+const { Transfer } = require("./Models/Transfer");
 const { Counter } = require("./Models/Counter");
 
 app.listen(port, () => {
@@ -76,7 +77,6 @@ app.post("/api/income/submit", (req, res) => {
         });
     });
 });
-
 app.post("/api/income/list", (req, res) => {
   // NOTE find() : MongoDB에서 Document를 찾는 명령어
   Income.find()
@@ -113,6 +113,16 @@ app.post("/api/income/edit", (req, res) => {
       res.status(400).json({ success: false, err });
     });
 });
+app.post("/api/income/delete", (req, res) => {
+  Income.deleteOne({ postNum: Number(req.body.postNum) })
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
 
 // ANCHOR expense
 app.post("/api/expense/submit", (req, res) => {
@@ -137,7 +147,6 @@ app.post("/api/expense/submit", (req, res) => {
         });
     });
 });
-
 app.post("/api/expense/list", (req, res) => {
   // NOTE find() : MongoDB에서 Document를 찾는 명령어
   Expense.find()
@@ -169,6 +178,16 @@ app.post("/api/expense/edit", (req, res) => {
     .exec()
     .then((doc) => {
       res.status(200).json({ success: true });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
+app.post("/api/expense/delete", (req, res) => {
+  Expense.deleteOne({ postNum: Number(req.body.postNum) })
+    .exec()
+    .then((doc) => {
+      res.status(200).json({ success: true, post: doc });
     })
     .catch((err) => {
       res.status(400).json({ success: false, err });
