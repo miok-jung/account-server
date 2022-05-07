@@ -1,4 +1,5 @@
 const express = require("express");
+const dayjs = require("dayjs");
 const router = express.Router();
 
 // ANCHOR Models를 불러오기
@@ -18,14 +19,20 @@ router.get("/list", (req, res) => {
       res.status(400).json({ success: false, err });
     });
 });
-router.get("/total", (req, res) => {
+router.get("/month/total", (req, res) => {
   let total = 0;
-  const newDate = new Date();
-  let month = newDate.getMonth() + 1; // 현재 월을 가져옴
-  Income.find()
+  let startDate = dayjs().set("day", 0).format("YYYY-MM-DD");
+  let endDay = dayjs().daysInMonth() - 1;
+  let endDate = dayjs().set("day", endDay).format("YYYY-MM-DD");
+  // gte : ~이상, lte : ~이하
+  Income.find({
+    date: {
+      $gte: startDate,
+      $lte: endDate,
+    },
+  })
     .exec()
     .then((doc) => {
-      console.log(month);
       doc.map((item) => {
         total += item.price;
       });
