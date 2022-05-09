@@ -19,6 +19,20 @@ router.get("/list", (req, res) => {
       res.status(400).json({ success: false, err });
     });
 });
+router.get("/all/total", (req, res) => {
+  let total = 0;
+  Income.find()
+    .exec()
+    .then((doc) => {
+      doc.map((item) => {
+        total += item.price;
+      });
+      res.status(200).json({ success: true, total: total });
+    })
+    .catch((err) => {
+      res.status(400).json({ success: false, err });
+    });
+});
 router.get("/month/total", (req, res) => {
   let total = 0;
   let startDate = dayjs().set("day", 0).format("YYYY-MM-DD");
