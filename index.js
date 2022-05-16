@@ -1,6 +1,7 @@
 const express = require('express'); // express 불러오기
 const path = require('path'); // path 불러오기 : 현재경로와 상대경로를 결합해주는 라이브러리인데 현재는 node에 내장된 함수로 되어 설치없이 사용가능하다.
 const mongoose = require('mongoose'); // mongoose 라이브러리 불러오기
+const cookieParser = require('cookie-parser');
 
 const app = express(); //  app이라는 변수에 express 객체를 할당
 const port = 5000;
@@ -15,6 +16,7 @@ app.use(express.static(path.join(__dirname, '../client/build/index.html')));
 app.use(express.urlencoded({ extended: true }));
 // application/json을 분석해서 가져올 수 있다.
 app.use(express.json());
+app.use(cookieParser());
 
 // ANCHOR Models를 불러오기
 const { Transfer } = require('./Models/Transfer');

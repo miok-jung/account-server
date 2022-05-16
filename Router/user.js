@@ -33,17 +33,24 @@ router.post('/login', (req, res) => {
       });
     }
     // 2. DB에서 요청한 이메일이 있는 경우, 비밀번호가 맞는 비밀번호인지 확인하기
-    user.comparePassword(req.body.password, (err, isMatch) => {
+    user.comparePassword(req.body.password, function (err, isMatch) {
       if (!isMatch)
-        return res.status(401).json({
+        return res.status(400).json({
           loginSuccess: false,
           message: '비밀번호가 틀렸습니다.',
         });
 
       // 3. 비밀번호까지 같다면 토큰을 생성하기
-      // user.generateToken((err, user) => {
-      //   // ...
-      // });
+      user.generateToken((err, user) => {
+        console.log('g', err);
+        if (err) return res.status(400).send(err);
+
+        // 토큰을 쿠키 저장한다. 쿠키, 로컬스토리지, 세션등 다양학 존재하며 각각의 장단점이 있다.
+        res
+          .cookie('x_auth', user.token)
+          .status(200)
+          .json({ loginSuccess: true, userId: user._id });
+      });
     });
   });
 });
