@@ -3,6 +3,7 @@ const router = express.Router();
 
 // ANCHOR Models를 불러오기
 const { User } = require('../Models/User');
+const { auth } = require('../middleware/auth');
 
 router.post('/register', (req, res) => {
   // 인스턴스 생성 : 할당된 실체
@@ -52,6 +53,19 @@ router.post('/login', (req, res) => {
           .json({ loginSuccess: true, userId: user._id });
       });
     });
+  });
+});
+
+// NOTE auth : 미들웨어(중간작업)
+router.post('/auth', auth, (req, res) => {
+  // 여기까지 미들웨어를 통과해 왔다는 이야기는 Authentication이 True라는 말이다.
+  // role =0 일반유저, role !=0 관리자
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true,
+    email: req.user.email,
+    role: req.user.role,
   });
 });
 module.exports = router;
