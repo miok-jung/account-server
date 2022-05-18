@@ -54,9 +54,8 @@ userSchema.methods.generateToken = function (cb) {
   // user._id와 'secretToekn'를 결합하여 새로운 token을 생성
 
   var token = jwt.sign(user._id.toHexString(), 'secretToken');
-  user.toekn = token;
+  user.token = token;
   user.save((err, user) => {
-    console.log('je', err);
     if (err) return cb(err);
     cb(null, user);
   });

@@ -24,11 +24,12 @@ router.post('/register', (req, res) => {
   // });
 });
 
+// FIXME 로그인 오류시 보내는 코드를 나누어야 할지 고민해야한다.
 router.post('/login', (req, res) => {
   // 1. 요청된 이메일을 데이터베이스에서 있는지 찾기
   User.findOne({ email: req.body.email }, (err, user) => {
     if (!user) {
-      return res.json({
+      return res.status(400).json({
         loginSuccess: false,
         message: '제공된 이메일에 해당되는 유저가 없습니다.',
       });
@@ -43,14 +44,14 @@ router.post('/login', (req, res) => {
 
       // 3. 비밀번호까지 같다면 토큰을 생성하기
       user.generateToken((err, user) => {
-        console.log('g', err);
         if (err) return res.status(400).send(err);
 
         // 토큰을 쿠키 저장한다. 쿠키, 로컬스토리지, 세션등 다양학 존재하며 각각의 장단점이 있다.
-        res
-          .cookie('x_auth', user.token)
-          .status(200)
-          .json({ loginSuccess: true, userId: user._id });
+        res.cookie('x_auth', user.token).status(200).json({
+          loginSuccess: true,
+          userId: user._id,
+          nickname: user.nickname,
+        });
       });
     });
   });
@@ -65,7 +66,16 @@ router.post('/auth', auth, (req, res) => {
     isAdmin: req.user.role === 0 ? false : true,
     isAuth: true,
     email: req.user.email,
+    nickname: req.user.nickname,
     role: req.user.role,
   });
 });
+
+router.get('/logout', auth, (req, res) => {
+  User.findOneAndUpdate({ _id: req.user._id }, { token: '' }, (err, user) => {
+    if (err) return res.json({ success: false, err });
+    return res.status(200).send({ success: true });
+  });
+});
+
 module.exports = router;
