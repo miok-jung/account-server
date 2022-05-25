@@ -58,7 +58,7 @@ router.post('/login', (req, res) => {
 });
 
 // NOTE auth : 미들웨어(중간작업)
-router.post('/auth', auth, (req, res) => {
+router.get('/auth', auth, (req, res) => {
   // 여기까지 미들웨어를 통과해 왔다는 이야기는 Authentication이 True라는 말이다.
   // role =0 일반유저, role !=0 관리자
   res.status(200).json({
